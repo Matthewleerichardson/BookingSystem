@@ -20,9 +20,24 @@ namespace FinalTeamProject.Controllers
         }
 
         // GET: Customers
-        public async Task<IActionResult> Index(string sortOrder, string searchString)
+        public async Task<IActionResult> Index(
+    string sortOrder,
+    string currentFilter,
+    string searchString,
+    int? page)
         {
+            ViewData["CurrentSort"] = sortOrder;
             ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+
+            if (searchString != null)
+            {
+                page = 1;
+            }
+            else
+            {
+                searchString = currentFilter;
+            }
+
             ViewData["CurrentFilter"] = searchString;
 
             var customers = from s in _context.Customers
@@ -44,7 +59,8 @@ namespace FinalTeamProject.Controllers
                     customers = customers.OrderBy(s => s.FirstName);
                     break;
             }
-            return View(await customers.AsNoTracking().ToListAsync());
+            int pageSize = 3;
+            return View(await PaginatedList<Customer>.CreateAsync(customers.AsNoTracking(), page ?? 1, pageSize));
         }
 
         // GET: Customers/Details/5

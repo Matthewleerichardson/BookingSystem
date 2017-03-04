@@ -20,9 +20,24 @@ namespace FinalTeamProject.Controllers
         }
 
         // GET: Staffs
-        public async Task<IActionResult> Index(string sortOrder, string searchString)
+        public async Task<IActionResult> Index(
+    string sortOrder,
+    string currentFilter,
+    string searchString,
+    int? page)
         {
+            ViewData["CurrentSort"] = sortOrder;
             ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+
+            if (searchString != null)
+            {
+                page = 1;
+            }
+            else
+            {
+                searchString = currentFilter;
+            }
+
             ViewData["CurrentFilter"] = searchString;
 
             var staffs = from s in _context.Staffs
@@ -44,7 +59,8 @@ namespace FinalTeamProject.Controllers
                     staffs = staffs.OrderBy(s => s.FirstName);
                     break;
             }
-            return View(await staffs.AsNoTracking().ToListAsync());
+            int pageSize = 3;
+            return View(await PaginatedList<Staff>.CreateAsync(staffs.AsNoTracking(), page ?? 1, pageSize));
         }
 
         // GET: Staffs/Details/5
