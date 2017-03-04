@@ -20,9 +20,31 @@ namespace FinalTeamProject.Controllers
         }
 
         // GET: Staffs
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string sortOrder, string searchString)
         {
-            return View(await _context.Staffs.ToListAsync());
+            ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+            ViewData["CurrentFilter"] = searchString;
+
+            var staffs = from s in _context.Staffs
+                           select s;
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                staffs = staffs.Where(s => s.LastName.Contains(searchString)
+                                       || s.FirstName.Contains(searchString));
+            }
+
+            switch (sortOrder)
+            {
+                case "name_desc":
+                    staffs = staffs.OrderByDescending(s => s.LastName);
+                    staffs = staffs.OrderByDescending(s => s.FirstName);
+                    break;
+                default:
+                    staffs = staffs.OrderBy(s => s.LastName);
+                    staffs = staffs.OrderBy(s => s.FirstName);
+                    break;
+            }
+            return View(await staffs.AsNoTracking().ToListAsync());
         }
 
         // GET: Staffs/Details/5
@@ -33,9 +55,15 @@ namespace FinalTeamProject.Controllers
                 return NotFound();
             }
 
-            var staff = await _context.Staffs.SingleOrDefaultAsync(m => m.ID == id);
+            var staff = await _context.Staffs
+                .Include(c => c.Appointment)
+                .ThenInclude(e => e.Customer)
+                .AsNoTracking()
+                .SingleOrDefaultAsync(m => m.ID == id);
+
             if (staff == null)
-            {
+            
+                {
                 return NotFound();
             }
 

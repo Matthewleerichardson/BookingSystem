@@ -12,6 +12,9 @@ namespace FinalTeamProject.Models
         public DateTime AppointmentDate { get; set; }
 
         public Customer Customer { get; set; }
-        public Staff Staff { get; set; }
+       public Staff Staff { get; set; }
+
+
+     // public ICollection<Staff> Staff { get; set; }
     }
 }

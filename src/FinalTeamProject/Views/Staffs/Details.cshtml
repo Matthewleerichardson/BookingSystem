@@ -28,6 +28,29 @@
         <dd>
             @Html.DisplayFor(model => model.Telephone)
         </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Appointment)
+        </dt>
+        <dd>
+            <table class="table">
+                <tr>
+                    <th>Staff Name</th>
+                    <th>Appointment Date</th>
+                </tr>
+                @foreach (var item in Model.Appointment)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Customer.LastName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.AppointmentDate)
+                        </td>
+                    </tr>
+                }
+            </table>
+        </dd>
+
     </dl>
 </div>
 <div>

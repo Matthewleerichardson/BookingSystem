@@ -10,6 +10,7 @@ namespace FinalTeamProject.Models
         public string LastName { get; set; }
         public string Telephone { get; set; }
 
+
         public ICollection<Appointment> Appointment { get; set; }
     }
 }

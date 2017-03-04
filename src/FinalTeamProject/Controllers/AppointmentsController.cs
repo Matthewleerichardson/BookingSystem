@@ -34,7 +34,12 @@ namespace FinalTeamProject.Controllers
                 return NotFound();
             }
 
-            var appointment = await _context.Appointments.SingleOrDefaultAsync(m => m.AppointmentID == id);
+            var appointment = await _context.Appointments
+            .Include(a => a.Customer)
+            .Include(a => a.Staff)
+            .AsNoTracking()
+            .SingleOrDefaultAsync(m => m.AppointmentID == id);
+
             if (appointment == null)
             {
                 return NotFound();
@@ -46,8 +51,8 @@ namespace FinalTeamProject.Controllers
         // GET: Appointments/Create
         public IActionResult Create()
         {
-            ViewData["CustomerID"] = new SelectList(_context.Customers, "ID", "ID");
-            ViewData["StaffID"] = new SelectList(_context.Staffs, "ID", "ID");
+            ViewData["CustomerID"] = new SelectList(_context.Customers, "ID", "LastName");
+            ViewData["StaffID"] = new SelectList(_context.Staffs, "ID", "LastName");
             return View();
         }
 
@@ -56,16 +61,28 @@ namespace FinalTeamProject.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("AppointmentID,AppointmentDate,CustomerID,StaffID")] Appointment appointment)
+        public async Task<IActionResult> Create
+            ([Bind("AppointmentID,AppointmentDate,Customer.LastName,Staff.LastName")] Appointment appointment)
         {
-            if (ModelState.IsValid)
+            try
+            {
+                if (ModelState.IsValid)
             {
                 _context.Add(appointment);
                 await _context.SaveChangesAsync();
                 return RedirectToAction("Index");
             }
-            ViewData["CustomerID"] = new SelectList(_context.Customers, "ID", "ID", appointment.CustomerID);
-            ViewData["StaffID"] = new SelectList(_context.Staffs, "ID", "ID", appointment.StaffID);
+            }
+            catch (DbUpdateException /* ex */)
+            {
+                //Log the error (uncomment ex variable name and write a log.
+                ModelState.AddModelError("", "Unable to save changes. " +
+                    "Try again, and if the problem persists " +
+                    "see your system administrator.");
+            }
+
+           // ViewData["CustomerID"] = new SelectList(_context.Customers, "ID", "LastName", appointment.CustomerID);
+           // ViewData["StaffID"] = new SelectList(_context.Staffs, "ID", "LastName", appointment.StaffID);
             return View(appointment);
         }
 
@@ -82,46 +99,42 @@ namespace FinalTeamProject.Controllers
             {
                 return NotFound();
             }
-            ViewData["CustomerID"] = new SelectList(_context.Customers, "ID", "ID", appointment.CustomerID);
-            ViewData["StaffID"] = new SelectList(_context.Staffs, "ID", "ID", appointment.StaffID);
+            ViewData["CustomerID"] = new SelectList(_context.Customers, "ID", "LastName", appointment.CustomerID);
+            ViewData["StaffID"] = new SelectList(_context.Staffs, "ID", "LastName", appointment.StaffID);
             return View(appointment);
         }
 
         // POST: Appointments/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
+        [HttpPost, ActionName("Edit")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("AppointmentID,AppointmentDate,CustomerID,StaffID")] Appointment appointment)
+        public async Task<IActionResult> EditPost(int? id)
         {
-            if (id != appointment.AppointmentID)
+            if (id == null)
             {
                 return NotFound();
             }
-
-            if (ModelState.IsValid)
+            var appointmentToUpdate = await _context.Appointments.SingleOrDefaultAsync(s => s.AppointmentID == id);
+            if (await TryUpdateModelAsync<Appointment>(
+                appointmentToUpdate,
+                "",
+                s => s.AppointmentID, s => s.AppointmentDate, s => s.CustomerID, s => s.StaffID))
             {
                 try
                 {
-                    _context.Update(appointment);
                     await _context.SaveChangesAsync();
+                    return RedirectToAction("Index");
                 }
-                catch (DbUpdateConcurrencyException)
+                catch (DbUpdateException /* ex */)
                 {
-                    if (!AppointmentExists(appointment.AppointmentID))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    //Log the error (uncomment ex variable name and write a log.)
+                    ModelState.AddModelError("", "Unable to save changes. " +
+                        "Try again, and if the problem persists, " +
+                        "see your system administrator.");
                 }
-                return RedirectToAction("Index");
             }
-            ViewData["CustomerID"] = new SelectList(_context.Customers, "ID", "ID", appointment.CustomerID);
-            ViewData["StaffID"] = new SelectList(_context.Staffs, "ID", "ID", appointment.StaffID);
-            return View(appointment);
+            return View(appointmentToUpdate);
         }
 
         // GET: Appointments/Delete/5
