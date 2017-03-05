@@ -4,6 +4,7 @@
     "preserveCompilationContext": true
   },
   "dependencies": {
+    "bootstrap": "3.3.7",
     "Microsoft.AspNetCore.Authentication.Cookies": "1.0.0",
     "Microsoft.AspNetCore.Diagnostics": "1.0.0",
     "Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore": "1.0.0",
