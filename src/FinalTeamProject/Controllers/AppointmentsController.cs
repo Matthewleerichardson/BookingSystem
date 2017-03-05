@@ -62,7 +62,7 @@ namespace FinalTeamProject.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create
-            ([Bind("AppointmentID,AppointmentDate,Customer.LastName,Staff.LastName")] Appointment appointment)
+            ([Bind("AppointmentID,AppointmentDate,CustomerID,StaffID")] Appointment appointment)
         {
             try
             {
