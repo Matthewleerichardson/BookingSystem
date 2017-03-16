@@ -73,8 +73,8 @@ namespace FinalTeamProject.Controllers
         // GET: Appointments/Create
         public IActionResult Create()
         {
-            ViewData["CustomerID"] = new SelectList(_context.Customers, "ID", "LastName");
-            ViewData["StaffID"] = new SelectList(_context.Staffs, "ID", "LastName");
+            ViewData["CustomerID"] = new SelectList(_context.Customers, "ID", "NameTelephone");
+            ViewData["StaffID"] = new SelectList(_context.Staffs, "ID", "NameTelephone");
             return View();
         }
 

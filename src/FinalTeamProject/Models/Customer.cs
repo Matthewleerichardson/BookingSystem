@@ -16,6 +16,13 @@ namespace FinalTeamProject.Models
                 return LastName + ", " + FirstName;
             }
         }
+        public string NameTelephone
+        {
+            get
+            {
+                return LastName + ", " + FirstName + ", " + Telephone;
+            }
+        }
 
         public ICollection<Appointment> Appointment { get; set; }
     }
