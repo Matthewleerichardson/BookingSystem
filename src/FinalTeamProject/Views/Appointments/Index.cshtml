@@ -7,19 +7,19 @@
 <h2>Index</h2>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create">Create New Appointment</a>
 </p>
 <table class="table">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.AppointmentDate)
+                <a asp-action="Index" asp-route-sortOrder="@ViewData["DateSortParm"]">@Html.DisplayNameFor(model => model.AppointmentDate)</a>
             </th>
             <th>
-                Staff Last Name
+                Staff Name
             </th>
             <th>
-                Customer Last Name
+                Customer Name
             </th>
         </tr>
     </thead>
@@ -30,10 +30,10 @@
                 @Html.DisplayFor(modelItem => item.AppointmentDate)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Staff.LastName)
+                @Html.DisplayFor(modelItem => item.Staff.FullName)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Customer.LastName)
+                @Html.DisplayFor(modelItem => item.Customer.FullName)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.AppointmentID">Edit</a> |

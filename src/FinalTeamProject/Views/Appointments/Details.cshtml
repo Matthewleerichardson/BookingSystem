@@ -9,12 +9,28 @@
 <div>
     <h4>Appointment</h4>
     <hr />
-    <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.AppointmentDate)
-        </dt>
+    <dl class="dl-horizontal">  
         <dd>
-            @Html.DisplayFor(model => model.AppointmentDate)
+            <table class="table">
+                <tr>
+                    <th>Appointment Date</th>
+                    <th>Staff Name</th>
+                    <th>Customer Name</th>
+                </tr>
+                
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(model => model.AppointmentDate)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(model => model.Staff.FullName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(model => model.Customer.FullName)                        
+                        </td>
+                    </tr>
+                
+            </table>
         </dd>
     </dl>
 </div>

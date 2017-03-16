@@ -20,11 +20,33 @@ namespace FinalTeamProject.Controllers
         }
 
         // GET: Appointments
-        public async Task<IActionResult> Index()
+
+        //public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string sortOrder)
         {
-            var bookingContext = _context.Appointments.Include(a => a.Customer).Include(a => a.Staff);
-            return View(await bookingContext.ToListAsync());
+            ViewData["DateSortParm"] = sortOrder == "Date" ? "date_desc" : "Date";
+            var appointments = from s in _context.Appointments.Include(a => a.Customer).Include(a => a.Staff)
+
+            select s;
+            switch (sortOrder)
+            {
+                
+                case "Date":
+                    appointments = appointments.OrderBy(s => s.AppointmentDate);
+                    break;
+                case "date_desc":
+                    appointments = appointments.OrderByDescending(s => s.AppointmentDate);
+                    break;
+                default:
+                    appointments = appointments.OrderBy(s => s.AppointmentDate);
+                    break;
+            }
+            return View(await appointments.AsNoTracking().ToListAsync());
         }
+        //{
+          //var bookingContext = _context.Appointments.Include(a => a.Customer).Include(a => a.Staff);
+        //return View(await bookingContext.ToListAsync());
+        //}
 
         // GET: Appointments/Details/5
         public async Task<IActionResult> Details(int? id)
